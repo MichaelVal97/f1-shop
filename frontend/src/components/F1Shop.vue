@@ -1,89 +1,130 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue'
+import CartSidebar from './CartSidebar.vue'
 
-const items = ref([]);
-const loading = ref(true);
-const error = ref(null);
+const items = ref([])
+const cart = ref([])
+const loading = ref(true)
+const error = ref(null)
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://localhost:3030/api/items');
-    if (!res.ok) throw new Error('Error al obtener items');
-    items.value = await res.json();
+    const res = await fetch('http://localhost:3030/api/items')
+    items.value = await res.json()
   } catch (e) {
-    error.value = e.message;
+    error.value = e.message
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
-
-const cart = ref([]);
+})
 
 function addToCart(item) {
-  const found = cart.value.find(i => i.id === item.id);
-  if (found) found.qty += 1;
-  else cart.value.push({ ...item, qty: 1 });
+  const found = cart.value.find(i => i.id === item.id)
+  if (found) found.qty += 1
+  else cart.value.push({ ...item, qty: 1 })
 }
 
-function decrement(itemId) {
-  const idx = cart.value.findIndex(i => i.id === itemId);
-  if (idx === -1) return;
-  if (cart.value[idx].qty > 1) cart.value[idx].qty -= 1;
-  else cart.value.splice(idx, 1);
+function decrement(id) {
+  const index = cart.value.findIndex(i => i.id === id)
+  if (index === -1) return
+  if (cart.value[index].qty > 1) cart.value[index].qty--
+  else cart.value.splice(index, 1)
 }
 
-function removeFromCart(itemId) {
-  const idx = cart.value.findIndex(i => i.id === itemId);
-  if (idx !== -1) cart.value.splice(idx, 1);
+function removeFromCart(id) {
+  cart.value = cart.value.filter(i => i.id !== id)
 }
 
-const total = computed(() => {
-  return cart.value.reduce((sum, i) => sum + i.price * i.qty, 0).toFixed(2);
-});
+const total = computed(() => cart.value.reduce((s, i) => s + i.price * i.qty, 0))
 </script>
 
 <template>
   <div class="shop">
-    <h1>Tienda F1</h1>
-
-    <div v-if="loading">Cargando productos...</div>
-    <div v-if="error" class="error">Error: {{ error }}</div>
-
-    <div class="layout">
-      <section class="items">
-        <h2>Productos</h2>
-        <div class="grid">
-          <article class="card" v-for="item in items" :key="item.id">
-            <h3>{{ item.name }}</h3>
-            <p>Precio: ${{ item.price.toFixed(2) }}</p>
-            <button @click="addToCart(item)">Agregar</button>
-          </article>
+    <section class="products">
+      <h2>Productos oficiales F1</h2>
+      <div v-if="loading">Cargando productos...</div>
+      <div v-if="error">Error: {{ error }}</div>
+      <div class="grid">
+        <div v-for="item in items" :key="item.id" class="card">
+          <img src="https://cdn.pixabay.com/photo/2018/02/21/15/06/helmet-3162052_1280.png" alt="F1 product" />
+          <h3>{{ item.name }}</h3>
+          <p class="price">${{ item.price.toFixed(2) }}</p>
+          <button @click="addToCart(item)">Agregar al carrito</button>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <aside class="cart">
-        <h2>Carrito</h2>
-        <div v-if="cart.length === 0">Carrito vacío</div>
-        <ul v-else>
-          <li v-for="c in cart" :key="c.id">
-            {{ c.name }} — {{ c.qty }} x ${{ c.price.toFixed(2) }} = ${{ (c.qty * c.price).toFixed(2) }}
-            <button @click="decrement(c.id)">-</button>
-            <button @click="addToCart(c)">+</button>
-            <button @click="removeFromCart(c.id)">Eliminar</button>
-          </li>
-        </ul>
-        <div class="total">Total: ${{ total }}</div>
-      </aside>
-    </div>
+    <CartSidebar
+      :cart="cart"
+      :total="total"
+      :addToCart="addToCart"
+      :decrement="decrement"
+      :removeFromCart="removeFromCart"
+    />
   </div>
 </template>
 
 <style scoped>
-.layout { display:flex; gap:2rem; align-items:flex-start; }
-.items { flex: 2; }
-.cart { flex: 1; border-left:1px solid #ddd; padding-left:1rem; }
-.grid { display:flex; flex-wrap:wrap; gap:1rem; }
-.card { border:1px solid #eee; padding:1rem; border-radius:8px; width:200px; }
-button { margin-left: 0.5rem; }
-.total { margin-top: 1rem; font-weight: bold; }
+.shop {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.products {
+  flex: 2;
+}
+
+h2 {
+  color: var(--color-red);
+  margin-bottom: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background-color: var(--color-card);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px var(--color-red);
+}
+
+.card img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+}
+
+.price {
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+button {
+  background-color: var(--color-red);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+button:hover {
+  background-color: #b00000;
+}
+
+@media (max-width: 768px) {
+  .shop {
+    flex-direction: column;
+  }
+}
 </style>
