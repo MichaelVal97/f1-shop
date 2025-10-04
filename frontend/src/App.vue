@@ -7,8 +7,7 @@
       </div>
 
       <div class="right">
-        <!-- Botón para volver al inicio -->
-        <button @click="$router.push('/')" class="btn home">Tienda</button>
+        <button @click="$router.push('/')" class="btn home">Inicio</button>
 
         <template v-if="!isLoggedIn">
           <button @click="$router.push('/login')" class="btn login">Iniciar sesión</button>
@@ -22,12 +21,12 @@
       </div>
     </header>
 
-    <main class="container">
+    <main class="container fade-in">
       <router-view />
     </main>
 
     <footer class="footer">
-      <p>© 2025 F1 Tienda Mocoa </p>
+      <p>© 2025 F1 Shop - Proyecto académico</p>
     </footer>
   </div>
 </template>
@@ -57,54 +56,90 @@ function logout() {
 </script>
 
 <style scoped>
+/* GENERAL */
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--color-bg);
+  background: linear-gradient(180deg, #0a0a0a 0%, #161616 100%);
   color: var(--color-text);
   font-family: 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
 }
 
-/* Header */
+/* HEADER */
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--color-card);
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
   padding: 1rem 2rem;
-  border-bottom: 3px solid var(--color-red);
+  border-bottom: 2px solid #e10600;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  transition: 0.3s;
 }
 
 .left {
   display: flex;
   align-items: center;
   gap: 12px;
+  transition: transform 0.3s;
 }
 
+.left:hover {
+  transform: scale(1.05);
+}
+
+.logo {
+  width: 60px;
+  filter: drop-shadow(0 0 8px #e10600cc);
+}
+
+h1 {
+  margin: 0;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* BOTONES */
 .right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.logo {
-  width: 60px;
-}
-
-h1 {
-  margin: 0;
-}
-
-/* Botones */
 .btn {
-  padding: 0.5rem 1rem;
+  position: relative;
+  overflow: hidden;
+  padding: 0.6rem 1.3rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   color: white;
   font-weight: 600;
-  transition: 0.3s;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: all 0.6s;
+}
+
+.btn:hover::after {
+  left: 100%;
 }
 
 .btn.home {
@@ -116,35 +151,46 @@ h1 {
 }
 
 .btn.register {
-  background: #333;
+  background: #282828;
 }
 
 .btn.logout {
-  background: #444;
+  background: #333;
 }
 
 .btn:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(225, 6, 0, 0.5);
 }
 
+/* USER INFO */
 .user {
   margin-right: 8px;
   color: var(--color-text);
+  font-weight: 500;
 }
 
-/* Main */
+/* MAIN */
 .container {
   flex: 1;
   padding: 2rem;
+  animation: fadeIn 0.8s ease;
 }
 
-/* Footer */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* FOOTER */
 .footer {
-  margin-top: auto;
   text-align: center;
   padding: 1rem;
-  background: var(--color-card);
+  background: rgba(20, 20, 20, 0.9);
   color: var(--color-gray);
   font-size: 0.9rem;
+  border-top: 2px solid #e10600;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
 }
 </style>
