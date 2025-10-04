@@ -46,7 +46,7 @@ const total = computed(() => cart.value.reduce((s, i) => s + i.price * i.qty, 0)
       <div v-if="error">Error: {{ error }}</div>
       <div class="grid">
         <div v-for="item in items" :key="item.id" class="card">
-          <img src="https://cdn.pixabay.com/photo/2018/02/21/15/06/helmet-3162052_1280.png" alt="F1 product" />
+          <img src="https://www.google.com/imgres?q=gorra%20f1&imgurl=https%3A%2F%2Fneweraco.vtexassets.com%2Farquivos%2Fids%2F177750%2F60357194_1.png%3Fv%3D638289266590770000&imgrefurl=https%3A%2F%2Fwww.neweracap.com.co%2Fgorra-red-bull-essential-9forty-af-ajustable-new-era-60357194%2Fp&docid=JDLFzWNwXz3csM&tbnid=LTqJRtKs9GGDsM&vet=12ahUKEwjdxqC7q4qQAxV1TDABHf5aOdgQM3oECBcQAA..i&w=1200&h=1200&hcb=2&ved=2ahUKEwjdxqC7q4qQAxV1TDABHf5aOdgQM3oECBcQAA" alt="F1 product" />
           <h3>{{ item.name }}</h3>
           <p class="price">${{ item.price.toFixed(2) }}</p>
           <button @click="addToCart(item)">Agregar al carrito</button>
