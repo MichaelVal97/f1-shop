@@ -1,10 +1,22 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+import express from "express";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+import authRoutes from "./routes/auth.js";
+import { verifyToken, isAdmin } from "./Middleware/authMiddleware.js";
 
+const app = express();
 const PORT = process.env.PORT || 3030;
-const DATA_DIR = path.join(__dirname, 'data');
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Rutas de autenticación
+app.use("/api/auth", authRoutes);
+
+// 📂 Manejo de items (JSON local)
+const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'items.json');
 
 const sampleItems = [
@@ -24,11 +36,7 @@ function ensureData() {
 
 let items = ensureData();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// endpoints
+// Endpoints de items
 app.get('/api/items', (req, res) => res.json(items));
 app.get('/api/items/:id', (req, res) => {
   const item = items.find(i => i.id === Number(req.params.id));
@@ -36,14 +44,30 @@ app.get('/api/items/:id', (req, res) => {
   res.json(item);
 });
 
-// Simular creación de orden
-app.post('/api/orders', (req, res) => {
+// 💳 Manejo de órdenes en memoria
+let orders = [];
+
+// Ruta protegida: crear pedido (usuario logueado)
+app.post("/api/orders", verifyToken, (req, res) => {
   const { cart } = req.body;
   if (!Array.isArray(cart)) return res.status(400).json({ error: 'cart inválido' });
+
   const total = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
-  const order = { id: Date.now(), cart, total, createdAt: new Date() };
-  // aquí podrías persistir la orden en disco/DB
-  res.status(201).json(order);
+  const newOrder = {
+    id: Date.now(),
+    userId: req.user.id,
+    cart,
+    total,
+    createdAt: new Date()
+  };
+
+  orders.push(newOrder);
+  res.status(201).json({ message: "Pedido registrado", order: newOrder });
 });
 
-app.listen(PORT, () => console.log(`API escuchando en http://localhost:${PORT}`));
+// Ruta solo admin: ver todas las órdenes
+app.get("/api/orders", verifyToken, isAdmin, (req, res) => {
+  res.json(orders);
+});
+
+app.listen(PORT, () => console.log(`✅ Backend corriendo en http://localhost:${PORT}`));

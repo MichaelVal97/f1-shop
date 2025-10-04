@@ -1,7 +1,7 @@
 [
-  {"id":1,"name":"Casco F1 - 2025","price":75.00,"sku":"CAS-001"},
-  {"id":2,"name":"Gorra Equipo","price":25.00,"sku":"GOR-002"},
-  {"id":3,"name":"Camiseta Piloto","price":30.00,"sku":"CAM-003"},
-  {"id":4,"name":"Poster Circuito","price":15.00,"sku":"POS-004"},
-  {"id":5,"name":"Miniatura Coche","price":45.00,"sku":"MIN-005"}
+  {"id":1,"name":"Casco F1 - 2025","price":800.0000,"COP":"CAS-001"},
+  {"id":2,"name":"Gorra Equipo","price":120.000,"COP":"GOR-002"},
+  {"id":3,"name":"Camiseta Piloto","price":180.000,"COP":"CAM-003"},
+  {"id":4,"name":"Poster Circuito","price":60.000,"COP":"POS-004"},
+  {"id":5,"name":"Miniatura Coche","price":200.000,"COP":"MIN-005"}
 ]
